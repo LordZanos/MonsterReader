@@ -25,11 +25,15 @@ public class Creature {
 	@Override
 	public String toString() {
 		return name + "\n" +
+				"HD: " + hitDice + "\n" +
+				"Type: " + type + "\n" +
+				"Size: " + size + "\n" +
 				"Str: " + strength + "\n" +
 				"Dex: " + dexterity + "\n" +
 				"Con: " + constitution + "\n" +
 				"Int: " + intelligence + "\n" +
 				"Wis: " + wisdom + "\n" +
-				"Cha: " + charisma;
+				"Cha: " + charisma + "\n" +
+				"NA: " + naturalArmor;
  	}
 }
