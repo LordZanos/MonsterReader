@@ -30,6 +30,7 @@ public class Book {
 	    list = new ArrayList<String>(Arrays.asList(lines));
 	    list.removeAll(Collections.singleton("\n"));
 	    list.removeAll(Collections.singleton("\r"));
+	    System.out.println(name);
 
 	}
 	
@@ -83,13 +84,7 @@ public class Book {
 	private Creature createCreature(String name, int x, int currentIndex, String sizeType) {
 		Creature c = new Creature();
 		c.name = name;
-		c.hitDice = searchNextX(Pattern.compile("[0-9]{1,2}d[0-9]{1,2}"), currentIndex, 10, x).trim();
-		if (c.hitDice.equals("ERROR FAIL")) {
-			c.hitDice = c.hitDice = searchNextX(Pattern.compile("[0-9]{1,2} HD"), currentIndex, 10, x).trim().split(" ")[0];
-		}
-		else {
-			c.hitDice = c.hitDice.split("d")[0];
-		}
+		c.hitDice = searchHitDice(currentIndex, 20, x);
 		c.size = sizeType.trim().split(" ")[0];
 		c.type = sizeType.trim().split(" ")[1];
 		c.strength = searchNextX(Pattern.compile("Str ([0-9]{1,2}|—)"), currentIndex, 50, x).trim().split(" ")[1];
@@ -98,9 +93,69 @@ public class Book {
 		c.intelligence = searchNextX(Pattern.compile("Int ([0-9]{1,2}|—)"), currentIndex, 50, x).trim().split(" ")[1];
 		c.wisdom = searchNextX(Pattern.compile("Wis ([0-9]{1,2}|—)"), currentIndex, 50, x).trim().split(" ")[1];
 		c.charisma = searchNextX(Pattern.compile("Cha ([0-9]{1,2}|—)"), currentIndex, 50, x).trim().split(" ")[1];
-		c.naturalArmor = searchNextX(Pattern.compile("(?i)\\+[0-9]{1,2} Natural"), currentIndex, 50, x).trim().split(" ")[0];
+		c.naturalArmor = searchNextX(Pattern.compile("(?i)\\+[0-9]{1,2} Natural"),currentIndex, 50, x).split(" ")[0];
 		return c;
 	}
+	
+	private String searchHitDice(int start, int limit, int group) {
+		Pattern newFormat = Pattern.compile("[0-9]{1,2}d[0-9]{1,2}");
+		Pattern oldFormat = Pattern.compile("[0-9]{1,2} HD");
+		int currentIndex = start;
+		String searchString = list.get(currentIndex);
+		for(; currentIndex < start + limit; currentIndex++) {
+			List<String> newMatches = new ArrayList<String>();
+			List<String> oldMatches = new ArrayList<String>();
+			Matcher newMatcher = newFormat.matcher(searchString);
+			Matcher oldMatcher = oldFormat.matcher(searchString);
+			while(newMatcher.find()) {
+				newMatches.add(newMatcher.group(0));
+			}
+			while(oldMatcher.find()) {
+				oldMatches.add(oldMatcher.group(0));
+			}
+			if(newMatches.size() >= 1 && oldMatches.size() >= 1) {
+				return "FUCKY FUCKY";
+			}
+			else if (newMatches.size() > group) {
+				return newMatches.get(group).trim().split("d")[0];
+			}
+			else if (oldMatches.size() > group) {
+				return oldMatches.get(group).trim().split(" ")[0];
+			}
+			searchString = searchString + list.get(currentIndex + 1).replaceAll("\r", " ").replaceAll(" +", " ");
+		}
+		return "ERROR FAIL";
+	}
+	
+	//needs work, difficulty parsing correct number when +X Natural is split across two lines in multi-monster tables
+	/*private String searchNatArmor(int start, int limit, int group) {
+		Pattern standard = Pattern.compile("(?i)\\+[0-9]{1,2} Natural");
+		Pattern split = Pattern.compile("(?i)\\+[0-9]{1,2} ((?!Natural)|(?!Dex))");
+		int currentIndex = start;
+		String searchString = list.get(currentIndex);
+		for(; currentIndex < start + limit; currentIndex++) {
+			List<String> standardMatches = new ArrayList<String>();
+			List<String> splitMatches = new ArrayList<String>();
+			Matcher standardMatcher = standard.matcher(searchString);
+			Matcher splitMatcher = split.matcher(searchString);
+			while(standardMatcher.find()) {
+				standardMatches.add(standardMatcher.group(0));
+			}
+			while(splitMatcher.find()) {
+				if(list.get(currentIndex + 1).contains("natural")) {
+					splitMatches.add(splitMatcher.group(0));
+				}
+			}
+			if (standardMatches.size() > group) {
+				return standardMatches.get(group).trim().split(" ")[0];
+			}
+			else if (splitMatches.size() > group) {
+				return splitMatches.get(group).trim();
+			}
+			searchString = list.get(currentIndex + 1).replaceAll(" +", " ");
+		}
+		return "ERROR FAIL";
+	}*/
 	
 	private String searchNextX(Pattern p, int start, int limit, int group) {
 		int currentIndex = start;
@@ -114,7 +169,7 @@ public class Book {
 			if(matches.size() > group) {
 				return matches.get(group);
 			}
-			searchString = searchString + list.get(currentIndex + 1).replaceAll("\r", " ").replaceAll(" +", " ");
+			searchString = searchString + list.get(currentIndex + 1).replaceAll("\r", " ").replaceAll(" +", " ").replaceAll("-", "");
 		}
 		return "ERROR FAIL";
 	}
