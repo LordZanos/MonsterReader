@@ -9,9 +9,10 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-      - uses: darshitsri/zip-release@v3
+      - uses: TheDoctor0/zip-release@0.7.6
         with:
           filename: result.zip
+          exclusions: .github
       - name: Upload to relase
         uses: svenstaro/upload-release-action@v2
         with:
