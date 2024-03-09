@@ -9,14 +9,13 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-      - uses: vimtor/action-zip@v1.2
+      - uses: darshitsri/zip-release@v3
         with:
-          files: dist/
-          dest: result.zip
+          filename: result.zip
       - name: Upload to relase
         uses: svenstaro/upload-release-action@v2
         with:
           file: result.zip
-          asset_name: result.zip
+          asset_name: release.zip
           overwrite: true
           body: "This is my release text"
