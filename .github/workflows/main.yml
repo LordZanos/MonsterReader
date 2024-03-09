@@ -1,0 +1,24 @@
+name: GitHub Archive
+
+on:
+  push:
+  
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+        with:
+          ref: 'github-meta'
+      - name: Create Archive
+        uses: ksm2/archive-action@v1
+        with:
+          name: test.zip
+      - name: Upload to relase
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: test.zip
+          asset_name: test.zip
+          overwrite: true
+          body: "This is my release text"
