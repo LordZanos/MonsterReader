@@ -9,8 +9,6 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-        with:
-          ref: 'github-meta'
       - name: Create Archive
         uses: ksm2/archive-action@v1
         with:
