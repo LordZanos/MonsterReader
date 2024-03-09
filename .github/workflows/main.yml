@@ -12,7 +12,7 @@ jobs:
       - uses: TheDoctor0/zip-release@0.7.6
         with:
           filename: result.zip
-          exclusions: .github
+          exclusions: '*.git*'
       - name: Upload to relase
         uses: svenstaro/upload-release-action@v2
         with:
